@@ -7,7 +7,6 @@
 
 #include "assembler.h"
 #include "../stack/stackconfig.h"
-#include "operations.h"
 
 //===================================================================
 
@@ -325,14 +324,17 @@ int convert_operations_to_binary_(struct Text* text, FILE* fp,
 
 //===================================================================
 
-FILE* open_code_file_(const char* filename, FUNC_FILE_LINE_PARAMS) {
+FILE* open_code_file_(const char* filename, const char* mode, FUNC_FILE_LINE_PARAMS) {
 
 	log_report();
 
 	if (string_ptr_check(filename) == 0)
 		return NULL;
 
-	FILE* fp = fopen(filename, "wb");
+	if (string_ptr_check(mode) == 0)
+		return NULL;
+
+	FILE* fp = fopen(filename, mode);
 
 	if (file_ptr_check(fp) == 0)
 		return NULL;
@@ -401,6 +403,8 @@ int init_header_(struct Header* header, FILE* fp, FUNC_FILE_LINE_PARAMS) {
 	header->signature = SIGN;
 	header->version = VERSION;
 
+	fseek(fp, 0, SEEK_END);
+	
 	long file_size = ftell(fp);
 
 	if (file_size == -1l) {
@@ -439,7 +443,7 @@ int code_file_write_header_(FILE* fp, struct Header* header,
 	if (file_ptr_check(fp) == 0)
 		return -1;
 
-	fseek(fp, SEEK_SET, 0);
+	fseek(fp, 0, SEEK_SET);
 	int fwrite_ret_val = 
 		fwrite(header, sizeof(char), sizeof(struct Header), fp);
 

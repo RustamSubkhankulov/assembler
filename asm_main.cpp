@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 	char* buf = text_init(argv[1], &text);
 	text_remove_comments(&text); $
 
-	FILE* fp = open_code_file(argv[2]);
+	FILE* fp = open_code_file(argv[2], "wb");
 	if (fp == NULL) 
 		return -1;
 

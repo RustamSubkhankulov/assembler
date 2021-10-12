@@ -9,6 +9,7 @@
 
 #include "../stack/stackconfig.h"
 #include "text_processing.h"
+#include "../stack/errors_and_logs.h"
 
 //#define PRINTNUMBEROFLINE
 
@@ -69,6 +70,8 @@ char* file_to_buf_copy(const char* filename, struct Text* text) {
 //=============================================================================
 long file_size(FILE* fp) {
 
+	smpl_log_report();
+
 	assert(fp != NULL);
 
 	int fseek_return = fseek(fp, 0L, SEEK_END);
@@ -87,14 +90,27 @@ long file_size(FILE* fp) {
 //============================================================================
 char* copy_data_to_buf(long size, FILE* fp) {
 
+	smpl_log_report();
 
 	assert(fp != NULL);
 
 	char* buf = (char*)calloc(size + 1, sizeof(char));
-	assert(buf != NULL);
+	if   (buf == NULL) {
+
+		set_global_error_code(CANNOT_ALLOCATE_MEM);
+		global_error_process();
+
+		return NULL;
+	}
 
 	long end_of_file = fread(buf, sizeof(char), size, fp);
-	assert(end_of_file == size);
+	if  (end_of_file != size) {
+
+		set_global_error_code(FREAD_ERR);
+		global_error_process();
+
+		return NULL;
+	}
 
 	buf[end_of_file] = '\0';
 

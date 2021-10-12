@@ -2,14 +2,8 @@
 
 #include "processor_general.h"
 #include "text_processing.h"
-#include "log_report.h"
+#include "../stack/errors_and_logs.h"
 #include "../stack/errors.h"
-
-//===================================================================
-
-static FILE* asm_listing_file = NULL;
-
-static const char* ASM_LISTING_FILENAME = "listing.txt";
 
 //===================================================================
 
@@ -42,8 +36,8 @@ int write_listing(int oper_code, const char* oper_name,
 
 //===================================================================
 
-#define open_code_file(filename) \
-		open_code_file_(filename , FUNC_FILE_LINE_GET_ARGS)
+#define open_code_file(filename, mode) \
+		open_code_file_(filename , mode, FUNC_FILE_LINE_GET_ARGS)
 
 #define close_code_file(fp) \
 		close_code_file_(fp, FUNC_FILE_LINE_GET_ARGS)
@@ -82,7 +76,8 @@ int convert_operations_to_binary_(struct Text* text, FILE* fp,
 
 //===================================================================
 
-FILE* open_code_file_(const char* filename, FUNC_FILE_LINE_PARAMS);
+FILE* open_code_file_(const char* filename, const char* mode,
+									  FUNC_FILE_LINE_PARAMS);
 
 int close_code_file_(FILE* fp, FUNC_FILE_LINE_PARAMS);
 
